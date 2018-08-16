@@ -8,7 +8,6 @@ import java.io.*;
 /**
  * Class AnimatedGifEncoder - Encodes a GIF file consisting of one or
  * more frames.
- * <p>
  * <pre>
  * Example:
  *    AnimatedGifEncoder e = new AnimatedGifEncoder();
@@ -18,7 +17,6 @@ import java.io.*;
  *    e.addFrame(image2);
  *    e.finish();
  * </pre>
- * <p>
  * No copyright asserted on the source code of this class. May be used
  * for any purpose, however, refer to the Unisys LZW patent for restrictions
  * on use of the associated Encoder class. Please forward any corrections
@@ -76,7 +74,6 @@ public class GifEncoder {
      * image is added.
      *
      * @param iter int number of iterations.
-     * @return
      */
     public void setRepeat(int iter) {
         if (iter >= 0) {
@@ -162,9 +159,11 @@ public class GifEncoder {
     }
 
     /**
-     * Flushes any pending data and closes output file.
-     * If writing to an OutputStream, the stream is not
-     * closed.
+     * * Flushes any pending data and closes output file.
+     * * If writing to an OutputStream, the stream is not
+     * * closed.
+     *
+     * @return success flag
      */
     public boolean finish() {
         if (!started)
@@ -217,7 +216,6 @@ public class GifEncoder {
      * than 20 do not yield significant improvements in speed.
      *
      * @param quality int greater than 0.
-     * @return
      */
     public void setQuality(int quality) {
         if (quality < 1)
@@ -319,6 +317,9 @@ public class GifEncoder {
 
     /**
      * Returns index of palette color closest to c
+     *
+     * @param c color
+     * @return RGB
      */
     protected int findClosest(Color c) {
         if (colorTab == null)
@@ -363,6 +364,8 @@ public class GifEncoder {
 
     /**
      * Writes Graphic Control Extension
+     *
+     * @throws IOException
      */
     protected void writeGraphicCtrlExt() throws IOException {
         out.write(0x21); // extension introducer
@@ -394,6 +397,8 @@ public class GifEncoder {
 
     /**
      * Writes Image Descriptor
+     *
+     * @throws IOException
      */
     protected void writeImageDesc() throws IOException {
         out.write(0x2c); // image separator
@@ -417,6 +422,8 @@ public class GifEncoder {
 
     /**
      * Writes Logical Screen Descriptor
+     *
+     * @throws IOException
      */
     protected void writeLSD() throws IOException {
         // logical screen size
@@ -434,7 +441,8 @@ public class GifEncoder {
 
     /**
      * Writes Netscape application extension to define
-     * repeat count.
+     *
+     * @throws IOException
      */
     protected void writeNetscapeExt() throws IOException {
         out.write(0x21); // extension introducer
@@ -449,6 +457,8 @@ public class GifEncoder {
 
     /**
      * Writes color table
+     *
+     * @throws IOException
      */
     protected void writePalette() throws IOException {
         out.write(colorTab, 0, colorTab.length);
@@ -460,6 +470,8 @@ public class GifEncoder {
 
     /**
      * Encodes and writes pixel data
+     *
+     * @throws IOException
      */
     protected void writePixels() throws IOException {
         Encoder encoder = new Encoder(width, height, indexedPixels, colorDepth);
@@ -468,6 +480,9 @@ public class GifEncoder {
 
     /**
      * Write 16-bit value to output stream, LSB first
+     *
+     * @param value
+     * @throws IOException
      */
     protected void writeShort(int value) throws IOException {
         out.write(value & 0xff);
@@ -476,6 +491,9 @@ public class GifEncoder {
 
     /**
      * Writes string to output stream
+     *
+     * @param s
+     * @throws IOException
      */
     protected void writeString(String s) throws IOException {
         for (int i = 0; i < s.length(); i++) {

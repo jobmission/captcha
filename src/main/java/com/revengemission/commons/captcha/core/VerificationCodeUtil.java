@@ -63,7 +63,7 @@ public class VerificationCodeUtil {
      * 使用系统默认字符源生成验证码
      *
      * @param verificationCodeLength 验证码长度
-     * @return
+     * @return verificationCode
      */
     public static String generateVerificationCode(int verificationCodeLength) {
         return generateVerificationCode(verificationCodeLength, VERIFICATION_CODES);
@@ -98,7 +98,7 @@ public class VerificationCodeUtil {
      * @param os                     流
      * @param verificationCodeLength 验证码长度
      * @param verificationCodeMode   场景类型
-     * @throws IOException
+     * @throws IOException if exception
      */
     public static void outputImage(int w, int h, OutputStream os, int verificationCodeLength, VerificationCodeMode verificationCodeMode) throws IOException {
         String code = generateVerificationCode(verificationCodeLength);
