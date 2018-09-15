@@ -3,8 +3,12 @@
 ## How to use ?
 
 ````
+File file = new File("F:\\verifies\\8.gif");
+VerificationCodeUtil.outputImage(w, h,file, "1A2B", VerificationCodeMode.MIXGIF);
+````
 
-File file6 = new File("F:\\verifies\\8.gif");
-VerificationCodeUtil.outputImage(w, h, new FileOutputStream(file6), 4, VerificationCodeMode.MIXGIF);
-
+### todo list 
+````
+Javadoc
+mvn checkstyle:checkstyle
 ````
