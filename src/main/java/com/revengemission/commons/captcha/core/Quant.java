@@ -90,12 +90,12 @@ public class Quant {
      * Initialise network in range (0,0,0) to (255,255,255) and set parameters
      * -----------------------------------------------------------------------
      */
-    public Quant(byte[] thepic, int len, int sample) {
+    public Quant(final byte[] thepic, int len, int sample) {
 
         int i;
         int[] p;
 
-        thepicture = thepic;
+        thepicture = thepic.clone();
         lengthcount = len;
         samplefac = sample;
 
@@ -167,7 +167,7 @@ public class Quant {
             }
             /* smallval entry is now in position i */
             if (smallval != previouscol) {
-                netindex[previouscol] = (startpos + i) >> 1;
+                netindex[previouscol] = (startpos + i) >>> 1;
                 for (j = previouscol + 1; j < smallval; j++)
                     netindex[j] = i;
                 previouscol = smallval;

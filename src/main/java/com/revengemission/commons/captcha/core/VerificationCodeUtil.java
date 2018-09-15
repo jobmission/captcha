@@ -75,7 +75,7 @@ public class VerificationCodeUtil {
      * @return
      */
     private static String generateVerificationCode(int verificationCodeLength, String sources) {
-        if (sources == null || sources.trim() == "") {
+        if (sources == null || "".equals(sources.trim())) {
             sources = VERIFICATION_CODES;
         }
         int codesLen = sources.length();
@@ -90,11 +90,11 @@ public class VerificationCodeUtil {
     /**
      * 输出指定验证码图片流
      *
-     * @param w                      验证码图片的宽
-     * @param h                      验证码图片的高
-     * @param os                     流
-     * @param verificationCode 验证码
-     * @param verificationCodeMode   场景类型
+     * @param w                    验证码图片的宽
+     * @param h                    验证码图片的高
+     * @param os                   流
+     * @param verificationCode     验证码
+     * @param verificationCodeMode 场景类型
      * @throws IOException if exception
      */
     public static void outputImage(int w, int h, OutputStream os, String verificationCode, VerificationCodeMode verificationCodeMode) throws IOException {
@@ -165,7 +165,7 @@ public class VerificationCodeUtil {
                 g2.setFont(getRandomFont(h, verificationCodeMode));
 
                 AffineTransform affine = new AffineTransform();
-                affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / verificationCodeLength) * i + (h - 4) / 2, h / 2);
+                affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / (double) verificationCodeLength) * i + (h - 4) / 2.0, h / 2.0);
                 g2.setTransform(affine);
                 g2.drawOval(random.nextInt(w), random.nextInt(h), 5 + random.nextInt(10), 5 + random.nextInt(10));
                 g2.drawChars(chars, i, 1, ((w - 10) / verificationCodeLength) * i + 5, h / 2 + (h - 4) / 2 - 10);
@@ -174,7 +174,7 @@ public class VerificationCodeUtil {
             g2.dispose();
             ImageIO.write(image, "jpg", os);
         } else if (verificationCodeMode.equals(VerificationCodeMode.GIF) || verificationCodeMode.equals(VerificationCodeMode.GIF3D) || verificationCodeMode.equals(VerificationCodeMode.MIXGIF)) {
-            GifEncoder gifEncoder = new GifEncoder(); // gif编码类，这个利用了洋人写的编码类
+            GifEncoder gifEncoder = new GifEncoder(); // gif编码类
             // 生成字符
             gifEncoder.start(os);
             gifEncoder.setQuality(180);
@@ -187,7 +187,7 @@ public class VerificationCodeUtil {
                 g2.setFont(getRandomFont(h, verificationCodeMode));
                 for (int j = 0; j < verificationCodeLength; j++) {
                     AffineTransform affine = new AffineTransform();
-                    affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / verificationCodeLength) * i + (h - 4) / 2, h / 2);
+                    affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w /(double) verificationCodeLength) * i + (h - 4) / 2.0, h / 2.0);
                     g2.setTransform(affine);
                     g2.drawChars(chars, i, 1, ((w - 10) / verificationCodeLength) * i + 5, h / 2 + (h - 4) / 2 - 10);
 
@@ -206,7 +206,7 @@ public class VerificationCodeUtil {
                 g2.setFont(getRandomFont(h, verificationCodeMode));
 
                 AffineTransform affine = new AffineTransform();
-                affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / verificationCodeLength) * i + (h - 4) / 2, h / 2);
+                affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / (double)verificationCodeLength) * i + (h - 4) / 2.0, h / 2.0);
                 g2.setTransform(affine);
                 g2.drawOval(random.nextInt(w), random.nextInt(h), 5 + random.nextInt(10), 5 + random.nextInt(10));
                 g2.drawChars(chars, i, 1, ((w - 10) / verificationCodeLength) * i + 5, h / 2 + (h - 4) / 2 - 10);
@@ -218,7 +218,6 @@ public class VerificationCodeUtil {
     }
 
     public static void outputImage(int w, int h, File file, String verificationCode, VerificationCodeMode verificationCodeMode) throws IOException {
-        int verificationCodeLength = verificationCode.length();
         OutputStream os = new FileOutputStream(file);
         try {
             outputImage(w, h, os, verificationCode, verificationCodeMode);
@@ -378,7 +377,7 @@ public class VerificationCodeUtil {
                 return null;
             str = str.trim();
             int len = str.length();
-            if (len == 0 || len % 2 == 1)
+            if (len == 0 || len % 2 != 0)
                 return null;
 
             byte[] b = new byte[len / 2];
