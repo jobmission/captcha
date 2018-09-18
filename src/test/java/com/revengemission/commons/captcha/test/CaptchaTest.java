@@ -28,7 +28,7 @@ public class CaptchaTest {
         File file4 = new File(path.toString(), 4 + ".gif");
         File file5 = new File(path.toString(), 5 + ".jpg");
         File file6 = new File(path.toString(), 6 + ".gif");
-        String code = VerificationCodeUtil.generateVerificationCode(4, "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz");
+        String code = VerificationCodeUtil.generateVerificationCode(4, null);
 
         VerificationCodeUtil.outputImage(w, h, file1, code, VerificationCodeMode.NORMAL);
         VerificationCodeUtil.outputImage(w, h, file2, code, VerificationCodeMode.D3);

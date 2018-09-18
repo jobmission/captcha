@@ -6,8 +6,9 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Random;
 
 /**
  * 验证码工具类：
@@ -20,7 +21,16 @@ public class VerificationCodeUtil {
     /**
      * 随机类
      */
-    private static Random random = new Random(System.currentTimeMillis());
+    private static SecureRandom random;
+
+    static {
+        try {
+            random = SecureRandom.getInstance("SHA1PRNG");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+    //private static Random random = new Random(System.currentTimeMillis());
 
     // 验证码来源范围，去掉了0,1,I,O,l,o几个容易混淆的字符
     public static final String VERIFICATION_CODES = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz";
@@ -228,6 +238,7 @@ public class VerificationCodeUtil {
                 try {
                     os.close();
                 } catch (IOException e) {
+                    System.out.println(e.getMessage());
                 }
             }
         }
@@ -248,6 +259,7 @@ public class VerificationCodeUtil {
                 try {
                     os.close();
                 } catch (IOException e) {
+                    System.out.println(e.getMessage());
                 }
             }
         }
