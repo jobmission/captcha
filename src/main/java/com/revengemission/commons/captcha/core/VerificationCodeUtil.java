@@ -74,8 +74,8 @@ public class VerificationCodeUtil {
      * @param sources                验证码字符源
      * @return
      */
-    private static String generateVerificationCode(int verificationCodeLength, String sources) {
-        if (sources == null || "".equals(sources.trim())) {
+    public static String generateVerificationCode(int verificationCodeLength, String sources) {
+        if (sources == null || sources.trim().length() == 0) {
             sources = VERIFICATION_CODES;
         }
         int codesLen = sources.length();
@@ -187,7 +187,7 @@ public class VerificationCodeUtil {
                 g2.setFont(getRandomFont(h, verificationCodeMode));
                 for (int j = 0; j < verificationCodeLength; j++) {
                     AffineTransform affine = new AffineTransform();
-                    affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w /(double) verificationCodeLength) * i + (h - 4) / 2.0, h / 2.0);
+                    affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / (double) verificationCodeLength) * i + (h - 4) / 2.0, h / 2.0);
                     g2.setTransform(affine);
                     g2.drawChars(chars, i, 1, ((w - 10) / verificationCodeLength) * i + 5, h / 2 + (h - 4) / 2 - 10);
 
@@ -206,7 +206,7 @@ public class VerificationCodeUtil {
                 g2.setFont(getRandomFont(h, verificationCodeMode));
 
                 AffineTransform affine = new AffineTransform();
-                affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / (double)verificationCodeLength) * i + (h - 4) / 2.0, h / 2.0);
+                affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / (double) verificationCodeLength) * i + (h - 4) / 2.0, h / 2.0);
                 g2.setTransform(affine);
                 g2.drawOval(random.nextInt(w), random.nextInt(h), 5 + random.nextInt(10), 5 + random.nextInt(10));
                 g2.drawChars(chars, i, 1, ((w - 10) / verificationCodeLength) * i + 5, h / 2 + (h - 4) / 2 - 10);
@@ -227,8 +227,7 @@ public class VerificationCodeUtil {
             if (os != null) {
                 try {
                     os.close();
-                } catch (Exception e) {
-                    throw e;
+                } catch (IOException e) {
                 }
             }
         }
@@ -248,8 +247,7 @@ public class VerificationCodeUtil {
             if (os != null) {
                 try {
                     os.close();
-                } catch (Exception e) {
-                    throw e;
+                } catch (IOException e) {
                 }
             }
         }
@@ -386,7 +384,7 @@ public class VerificationCodeUtil {
                     b[i / 2] = (byte) Integer.decode("0x" + str.substring(i, i + 2)).intValue();
                 }
                 return b;
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 return null;
             }
         }

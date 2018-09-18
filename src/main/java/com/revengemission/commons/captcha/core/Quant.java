@@ -202,8 +202,6 @@ public class Quant {
         radius = initradius;
 
         rad = radius >> radiusbiasshift;
-        if (rad <= 1)
-            rad = 0;
         for (i = 0; i < rad; i++)
             radpower[i] = alpha * (((rad * rad - i * i) * radbias) / (rad * rad));
 

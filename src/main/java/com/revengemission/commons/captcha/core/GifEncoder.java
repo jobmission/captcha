@@ -59,9 +59,7 @@ public class GifEncoder {
      * @param iter int number of iterations.
      */
     public void setRepeat(int iter) {
-        if (iter >= 0) {
-            repeat = iter;
-        }
+        repeat = iter;
     }
 
     /**
@@ -201,8 +199,6 @@ public class GifEncoder {
      * @param quality int greater than 0.
      */
     public void setQuality(int quality) {
-        if (quality < 1)
-            quality = 1;
         sample = quality;
     }
 
