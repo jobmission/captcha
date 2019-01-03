@@ -3,8 +3,21 @@
 ## How to use ?
 
 ````
+<dependency>
+			<groupId>com.revengemission.commons</groupId>
+			<artifactId>captcha</artifactId>
+			<version>0.3</version>
+</dependency>
+````
+````
 
-File file6 = new File("F:\\verifies\\8.gif");
-VerificationCodeUtil.outputImage(w, h, new FileOutputStream(file6), 4, VerificationCodeMode.MIXGIF);
+File file = new File("F:\\verifies\\captcha.gif");
+VerificationCodeUtil.outputImage(w, h, new FileOutputStream(file), 4, VerificationCodeMode.MIXGIF);
 
+````
+
+### todo list 
+````
+Javadoc
+mvn checkstyle:checkstyle
 ````

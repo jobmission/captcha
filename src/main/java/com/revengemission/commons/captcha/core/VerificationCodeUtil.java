@@ -5,11 +5,14 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Random;
 
 /**
  * 验证码工具类：
@@ -22,7 +25,16 @@ public class VerificationCodeUtil {
     /**
      * 随机类
      */
-    private static Random random = new Random();
+    private static SecureRandom random;
+
+    static {
+        try {
+            random = SecureRandom.getInstance("SHA1PRNG");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+    //private static Random random = new Random(System.currentTimeMillis());
 
     // 验证码来源范围，去掉了0,1,I,O,l,o几个容易混淆的字符
     public static final String VERIFICATION_CODES = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz";
@@ -32,10 +44,35 @@ public class VerificationCodeUtil {
     private static Font baseFont;
 
     static {
-        try {
+        /*try {
             baseFont = Font.createFont(Font.TRUETYPE_FONT, new ByteArrayInputStream(imgFontByte.hex2byte(FontBytes.getFontByteStr())));
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }*/
+
+        try {
+            URL url = VerificationCodeUtil.class.getResource("/IBMPlexSans-Thin.ttf");
+            /**
+             * url.getFile() 得到这个文件的绝对路径
+             */
+            System.out.println(url.getFile());
+            File file = new File(url.getFile());
+            if (file.exists()) {
+                baseFont = Font.createFont(Font.TRUETYPE_FONT, file);
+            } else {
+                url = VerificationCodeUtil.class.getResource("default.ttf");
+                file = new File(url.getFile());
+                if (file.exists()) {
+                    baseFont = Font.createFont(Font.TRUETYPE_FONT, file);
+                } else {
+                    baseFont = new Font(null, Font.PLAIN, 14);
+                }
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            System.out.println("create font finally");
         }
     }
 
@@ -60,7 +97,7 @@ public class VerificationCodeUtil {
             };
 
     /**
-     * 使用系统默认字符源生成验证码
+     * 使用默认字符源生成验证码
      *
      * @param verificationCodeLength 验证码长度
      * @return verificationCode
@@ -76,15 +113,14 @@ public class VerificationCodeUtil {
      * @param sources                验证码字符源
      * @return
      */
-    private static String generateVerificationCode(int verificationCodeLength, String sources) {
-        if (sources == null || sources.length() == 0) {
+    public static String generateVerificationCode(int verificationCodeLength, String sources) {
+        if (sources == null || sources.trim().length() == 0) {
             sources = VERIFICATION_CODES;
         }
         int codesLen = sources.length();
-        Random rand = new Random(System.currentTimeMillis());
         StringBuilder verificationCode = new StringBuilder(verificationCodeLength);
         for (int i = 0; i < verificationCodeLength; i++) {
-            verificationCode.append(sources.charAt(rand.nextInt(codesLen - 1)));
+            verificationCode.append(sources.charAt(random.nextInt(codesLen - 1)));
         }
 
         return verificationCode.toString();
@@ -93,25 +129,24 @@ public class VerificationCodeUtil {
     /**
      * 输出指定验证码图片流
      *
-     * @param w                      验证码图片的宽
-     * @param h                      验证码图片的高
-     * @param os                     流
-     * @param verificationCodeLength 验证码长度
-     * @param verificationCodeMode   场景类型
+     * @param w                    验证码图片的宽
+     * @param h                    验证码图片的高
+     * @param os                   流
+     * @param verificationCode     验证码
+     * @param verificationCodeMode 场景类型
      * @throws IOException if exception
      */
-    public static void outputImage(int w, int h, OutputStream os, int verificationCodeLength, VerificationCodeMode verificationCodeMode) throws IOException {
-        String code = generateVerificationCode(verificationCodeLength);
+    public static void outputImage(int w, int h, OutputStream os, String verificationCode, VerificationCodeMode verificationCodeMode) throws IOException {
+        int verificationCodeLength = verificationCode.length();
         BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        Random rand = new Random();
         Graphics2D g2 = image.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         Color[] colors = new Color[5];
         Color[] colorSpaces = colorRange;
         float[] fractions = new float[colors.length];
         for (int i = 0; i < colors.length; i++) {
-            colors[i] = colorSpaces[rand.nextInt(colorSpaces.length)];
-            fractions[i] = rand.nextFloat();
+            colors[i] = colorSpaces[random.nextInt(colorSpaces.length)];
+            fractions[i] = random.nextFloat();
         }
         Arrays.sort(fractions);
 
@@ -122,7 +157,7 @@ public class VerificationCodeUtil {
         g2.setColor(c);// 设置背景色
         g2.fillRect(0, 2, w, h - 4);
 
-        char[] charts = code.toCharArray();
+        char[] charts = verificationCode.toCharArray();
         for (int i = 0; i < charts.length; i++) {
             g2.setColor(c);// 设置背景色
             g2.setFont(getRandomFont(h, verificationCodeMode));
@@ -130,7 +165,6 @@ public class VerificationCodeUtil {
         }
 
         // 1.绘制干扰线
-        Random random = new Random();
         g2.setColor(getRandColor(160, 200));// 设置线条的颜色
         int lineNumbers = 20;
         if (verificationCodeMode.equals(VerificationCodeMode.VAGUE)) {
@@ -160,9 +194,9 @@ public class VerificationCodeUtil {
         // 3.使图片扭曲
         shear(g2, w, h, c);
 
-        char[] chars = code.toCharArray();
-        Double rd = rand.nextDouble();
-        Boolean rb = rand.nextBoolean();
+        char[] chars = verificationCode.toCharArray();
+        Double rd = random.nextDouble();
+        Boolean rb = random.nextBoolean();
 
         if (verificationCodeMode.equals(VerificationCodeMode.NORMAL)) {
             for (int i = 0; i < verificationCodeLength; i++) {
@@ -170,7 +204,7 @@ public class VerificationCodeUtil {
                 g2.setFont(getRandomFont(h, verificationCodeMode));
 
                 AffineTransform affine = new AffineTransform();
-                affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / verificationCodeLength) * i + (h - 4) / 2, h / 2);
+                affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / (double) verificationCodeLength) * i + (h - 4) / 2.0, h / 2.0);
                 g2.setTransform(affine);
                 g2.drawOval(random.nextInt(w), random.nextInt(h), 5 + random.nextInt(10), 5 + random.nextInt(10));
                 g2.drawChars(chars, i, 1, ((w - 10) / verificationCodeLength) * i + 5, h / 2 + (h - 4) / 2 - 10);
@@ -179,7 +213,7 @@ public class VerificationCodeUtil {
             g2.dispose();
             ImageIO.write(image, "jpg", os);
         } else if (verificationCodeMode.equals(VerificationCodeMode.GIF) || verificationCodeMode.equals(VerificationCodeMode.GIF3D) || verificationCodeMode.equals(VerificationCodeMode.MIXGIF)) {
-            GifEncoder gifEncoder = new GifEncoder(); // gif编码类，这个利用了洋人写的编码类
+            GifEncoder gifEncoder = new GifEncoder(); // gif编码类
             // 生成字符
             gifEncoder.start(os);
             gifEncoder.setQuality(180);
@@ -192,7 +226,7 @@ public class VerificationCodeUtil {
                 g2.setFont(getRandomFont(h, verificationCodeMode));
                 for (int j = 0; j < verificationCodeLength; j++) {
                     AffineTransform affine = new AffineTransform();
-                    affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / verificationCodeLength) * i + (h - 4) / 2, h / 2);
+                    affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / (double) verificationCodeLength) * i + (h - 4) / 2.0, h / 2.0);
                     g2.setTransform(affine);
                     g2.drawChars(chars, i, 1, ((w - 10) / verificationCodeLength) * i + 5, h / 2 + (h - 4) / 2 - 10);
 
@@ -211,7 +245,7 @@ public class VerificationCodeUtil {
                 g2.setFont(getRandomFont(h, verificationCodeMode));
 
                 AffineTransform affine = new AffineTransform();
-                affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / verificationCodeLength) * i + (h - 4) / 2, h / 2);
+                affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / (double) verificationCodeLength) * i + (h - 4) / 2.0, h / 2.0);
                 g2.setTransform(affine);
                 g2.drawOval(random.nextInt(w), random.nextInt(h), 5 + random.nextInt(10), 5 + random.nextInt(10));
                 g2.drawChars(chars, i, 1, ((w - 10) / verificationCodeLength) * i + 5, h / 2 + (h - 4) / 2 - 10);
@@ -222,8 +256,42 @@ public class VerificationCodeUtil {
         }
     }
 
-    public static void outputImage(int w, int h, OutputStream os, int verificationCodeLength) throws IOException {
-        outputImage(w, h, os, verificationCodeLength, VerificationCodeMode.NORMAL);
+    public static void outputImage(int w, int h, File file, String verificationCode, VerificationCodeMode verificationCodeMode) throws IOException {
+        OutputStream os = new FileOutputStream(file);
+        try {
+            outputImage(w, h, os, verificationCode, verificationCodeMode);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+    }
+
+    public static void outputImage(int w, int h, OutputStream os, String verificationCode) throws IOException {
+        outputImage(w, h, os, verificationCode, VerificationCodeMode.NORMAL);
+    }
+
+    public static void outputImage(int w, int h, File file, String verificationCode) throws IOException {
+        OutputStream os = new FileOutputStream(file);
+        try {
+            outputImage(w, h, os, verificationCode, VerificationCodeMode.NORMAL);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
     }
 
     /**
@@ -234,12 +302,6 @@ public class VerificationCodeUtil {
      * @return
      */
     private static Color getRandColor(int fc, int bc) {
-        if (fc > 255) {
-            fc = 255;
-        }
-        if (bc > 255) {
-            bc = 255;
-        }
         int r = fc + random.nextInt(bc - fc);
         int g = fc + random.nextInt(bc - fc);
         int b = fc + random.nextInt(bc - fc);
@@ -304,7 +366,6 @@ public class VerificationCodeUtil {
     private static int getRandomDrawLine() {
         int min = 20;
         int max = 155;
-        Random random = new Random();
         return random.nextInt(max) % (max - min + 1) + min;
     }
 
@@ -316,7 +377,7 @@ public class VerificationCodeUtil {
     private static float getRandomDrawPoint() {
         float min = 0.05f;
         float max = 0.1f;
-        return min + ((max - min) * new Random().nextFloat());
+        return min + ((max - min) * random.nextFloat());
     }
 
     /**
@@ -328,7 +389,6 @@ public class VerificationCodeUtil {
     private static int getRandomFontSize(int h) {
         int min = h - 8;
         // int max = 46;
-        Random random = new Random();
         return random.nextInt(11) + min;
     }
 
@@ -336,38 +396,10 @@ public class VerificationCodeUtil {
      * 3D中空字体自定义属性类
      */
     static class ImgFontByte {
-        public Font getFont(int fontSize, int fontStype) {
-            try {
-                Font font = baseFont;
-                if (baseFont == null) {
-                    font = Font.createFont(Font.TRUETYPE_FONT, new ByteArrayInputStream(imgFontByte.hex2byte(FontBytes.getFontByteStr())));
-                }
-                return font.deriveFont(fontStype, fontSize);
-            } catch (Exception e) {
-                return new Font("Arial", fontStype, fontSize);
-            }
+        public Font getFont(int fontSize, int fontStyle) {
+            Font font = baseFont;
+            return font.deriveFont(fontStyle, fontSize);
         }
-
-        private byte[] hex2byte(String str) {
-            if (str == null)
-                return null;
-            str = str.trim();
-            int len = str.length();
-            if (len == 0 || len % 2 == 1)
-                return null;
-
-            byte[] b = new byte[len / 2];
-            try {
-                for (int i = 0; i < str.length(); i += 2) {
-                    b[i / 2] = (byte) Integer.decode("0x" + str.substring(i, i + 2)).intValue();
-                }
-                return b;
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
-
     }
 
     /**
@@ -394,18 +426,15 @@ public class VerificationCodeUtil {
     private static void shearX(Graphics g, int w1, int h1, Color color) {
         int period = random.nextInt(2);
 
-        boolean borderGap = true;
         int frames = 1;
         int phase = random.nextInt(2);
 
         for (int i = 0; i < h1; i++) {
             double d = (double) (period >> 1) * Math.sin((double) i / (double) period + (6.2831853071795862D * (double) phase) / (double) frames);
             g.copyArea(0, i, w1, 1, (int) d, 0);
-            if (borderGap) {
-                g.setColor(color);
-                g.drawLine((int) d, i, 0, i);
-                g.drawLine((int) d + w1, i, w1, i);
-            }
+            g.setColor(color);
+            g.drawLine((int) d, i, 0, i);
+            g.drawLine((int) d + w1, i, w1, i);
         }
     }
 
@@ -420,17 +449,14 @@ public class VerificationCodeUtil {
     private static void shearY(Graphics g, int w1, int h1, Color color) {
         int period = random.nextInt(40) + 10; // 50;
 
-        boolean borderGap = true;
         int frames = 20;
         int phase = 7;
         for (int i = 0; i < w1; i++) {
             double d = (double) (period >> 1) * Math.sin((double) i / (double) period + (6.2831853071795862D * (double) phase) / (double) frames);
             g.copyArea(i, 0, 1, h1, 0, (int) d);
-            if (borderGap) {
-                g.setColor(color);
-                g.drawLine(i, (int) d, i, 0);
-                g.drawLine(i, (int) d + h1, i, h1);
-            }
+            g.setColor(color);
+            g.drawLine(i, (int) d, i, 0);
+            g.drawLine(i, (int) d + h1, i, h1);
         }
     }
 

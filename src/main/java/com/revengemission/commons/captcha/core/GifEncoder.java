@@ -5,23 +5,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.*;
 
-/**
- * Class AnimatedGifEncoder - Encodes a GIF file consisting of one or
- * more frames.
- * <pre>
- * Example:
- *    AnimatedGifEncoder e = new AnimatedGifEncoder();
- *    e.start(outputFileName);
- *    e.setDelay(1000);   // 1 frame per sec
- *    e.addFrame(image1);
- *    e.addFrame(image2);
- *    e.finish();
- * </pre>
- * No copyright asserted on the source code of this class. May be used
- * for any purpose, however, refer to the Unisys LZW patent for restrictions
- * on use of the associated Encoder class. Please forward any corrections
- * to questions at fmsware.com.
- */
 public class GifEncoder {
     protected int width; // image size
     protected int height;
@@ -76,9 +59,7 @@ public class GifEncoder {
      * @param iter int number of iterations.
      */
     public void setRepeat(int iter) {
-        if (iter >= 0) {
-            repeat = iter;
-        }
+        repeat = iter;
     }
 
     /**
@@ -218,8 +199,6 @@ public class GifEncoder {
      * @param quality int greater than 0.
      */
     public void setQuality(int quality) {
-        if (quality < 1)
-            quality = 1;
         sample = quality;
     }
 
@@ -271,7 +250,7 @@ public class GifEncoder {
      * @return false if open or initial write failed.
      */
     public boolean start(String file) {
-        boolean ok = true;
+        boolean ok;
         try {
             out = new BufferedOutputStream(new FileOutputStream(file));
             ok = start(out);

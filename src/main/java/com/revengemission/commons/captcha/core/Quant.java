@@ -90,12 +90,12 @@ public class Quant {
      * Initialise network in range (0,0,0) to (255,255,255) and set parameters
      * -----------------------------------------------------------------------
      */
-    public Quant(byte[] thepic, int len, int sample) {
+    public Quant(final byte[] thepic, int len, int sample) {
 
         int i;
         int[] p;
 
-        thepicture = thepic;
+        thepicture = thepic.clone();
         lengthcount = len;
         samplefac = sample;
 
@@ -167,7 +167,7 @@ public class Quant {
             }
             /* smallval entry is now in position i */
             if (smallval != previouscol) {
-                netindex[previouscol] = (startpos + i) >> 1;
+                netindex[previouscol] = (startpos + i) >>> 1;
                 for (j = previouscol + 1; j < smallval; j++)
                     netindex[j] = i;
                 previouscol = smallval;
@@ -202,8 +202,6 @@ public class Quant {
         radius = initradius;
 
         rad = radius >> radiusbiasshift;
-        if (rad <= 1)
-            rad = 0;
         for (i = 0; i < rad; i++)
             radpower[i] = alpha * (((rad * rad - i * i) * radbias) / (rad * rad));
 
@@ -338,8 +336,7 @@ public class Quant {
      */
     public void unbiasnet() {
 
-        int i, j;
-
+        int i;
         for (i = 0; i < netsize; i++) {
             network[i][0] >>= netbiasshift;
             network[i][1] >>= netbiasshift;
@@ -371,21 +368,15 @@ public class Quant {
             a = radpower[m++];
             if (j < hi) {
                 p = network[j++];
-                try {
-                    p[0] -= (a * (p[0] - b)) / alpharadbias;
-                    p[1] -= (a * (p[1] - g)) / alpharadbias;
-                    p[2] -= (a * (p[2] - r)) / alpharadbias;
-                } catch (Exception e) {
-                } // prevents 1.3 miscompilation
+                p[0] -= (a * (p[0] - b)) / alpharadbias;
+                p[1] -= (a * (p[1] - g)) / alpharadbias;
+                p[2] -= (a * (p[2] - r)) / alpharadbias;
             }
             if (k > lo) {
                 p = network[k--];
-                try {
-                    p[0] -= (a * (p[0] - b)) / alpharadbias;
-                    p[1] -= (a * (p[1] - g)) / alpharadbias;
-                    p[2] -= (a * (p[2] - r)) / alpharadbias;
-                } catch (Exception e) {
-                }
+                p[0] -= (a * (p[0] - b)) / alpharadbias;
+                p[1] -= (a * (p[1] - g)) / alpharadbias;
+                p[2] -= (a * (p[2] - r)) / alpharadbias;
             }
         }
     }
