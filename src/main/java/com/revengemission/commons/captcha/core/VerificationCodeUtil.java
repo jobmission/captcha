@@ -5,7 +5,11 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -40,10 +44,35 @@ public class VerificationCodeUtil {
     private static Font baseFont;
 
     static {
-        try {
+        /*try {
             baseFont = Font.createFont(Font.TRUETYPE_FONT, new ByteArrayInputStream(imgFontByte.hex2byte(FontBytes.getFontByteStr())));
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }*/
+
+        try {
+            URL url = VerificationCodeUtil.class.getResource("/IBMPlexSans-Thin.ttf");
+            /**
+             * url.getFile() 得到这个文件的绝对路径
+             */
+            System.out.println(url.getFile());
+            File file = new File(url.getFile());
+            if (file.exists()) {
+                baseFont = Font.createFont(Font.TRUETYPE_FONT, file);
+            } else {
+                url = VerificationCodeUtil.class.getResource("default.ttf");
+                file = new File(url.getFile());
+                if (file.exists()) {
+                    baseFont = Font.createFont(Font.TRUETYPE_FONT, file);
+                } else {
+                    baseFont = new Font(null, Font.PLAIN, 14);
+                }
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            System.out.println("create font finally");
         }
     }
 
@@ -68,7 +97,7 @@ public class VerificationCodeUtil {
             };
 
     /**
-     * 使用系统默认字符源生成验证码
+     * 使用默认字符源生成验证码
      *
      * @param verificationCodeLength 验证码长度
      * @return verificationCode
@@ -368,40 +397,9 @@ public class VerificationCodeUtil {
      */
     static class ImgFontByte {
         public Font getFont(int fontSize, int fontStyle) {
-
             Font font = baseFont;
-            if (font == null) {
-                try {
-                    font = Font.createFont(Font.TRUETYPE_FONT, new ByteArrayInputStream(imgFontByte.hex2byte(FontBytes.getFontByteStr())));
-                } catch (FontFormatException e) {
-                    return new Font("Arial", fontStyle, fontSize);
-                } catch (IOException e) {
-                    return new Font("Arial", fontStyle, fontSize);
-                }
-            }
             return font.deriveFont(fontStyle, fontSize);
         }
-
-        private byte[] hex2byte(String str) {
-            if (str == null)
-                return null;
-            str = str.trim();
-            int len = str.length();
-            if (len == 0 || len % 2 != 0)
-                return null;
-
-            byte[] b = new byte[len / 2];
-            try {
-                for (int i = 0; i < str.length(); i += 2) {
-                    b[i / 2] = (byte) Integer.decode("0x" + str.substring(i, i + 2)).intValue();
-                }
-                return b;
-            } catch (NumberFormatException e) {
-                return null;
-            }
-        }
-
-
     }
 
     /**

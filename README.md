@@ -3,8 +3,17 @@
 ## How to use ?
 
 ````
-File file = new File("F:\\verifies\\8.gif");
-VerificationCodeUtil.outputImage(w, h,file, "1A2B", VerificationCodeMode.MIXGIF);
+<dependency>
+			<groupId>com.revengemission.commons</groupId>
+			<artifactId>captcha</artifactId>
+			<version>0.3</version>
+</dependency>
+````
+````
+
+File file = new File("F:\\verifies\\captcha.gif");
+VerificationCodeUtil.outputImage(w, h, new FileOutputStream(file), 4, VerificationCodeMode.MIXGIF);
+
 ````
 
 ### todo list 
