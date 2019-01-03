@@ -15,7 +15,7 @@ import java.nio.file.Paths;
 public class CaptchaTest {
 
     @Test
-    //@Ignore
+    @Ignore
     public void outputVerificationCodeTest() throws IOException {
         Path path = Paths.get("/tmp", "verifies8");
         if (!Files.exists(path)) {
