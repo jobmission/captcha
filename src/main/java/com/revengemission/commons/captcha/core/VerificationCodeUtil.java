@@ -100,7 +100,7 @@ public class VerificationCodeUtil {
      * 使用默认字符源生成验证码
      *
      * @param verificationCodeLength 验证码长度
-     * @return verificationCode
+     * @return String VerificationCode
      */
     public static String generateVerificationCode(int verificationCodeLength) {
         return generateVerificationCode(verificationCodeLength, VERIFICATION_CODES);
@@ -111,7 +111,7 @@ public class VerificationCodeUtil {
      *
      * @param verificationCodeLength 验证码长度
      * @param sources                验证码字符源
-     * @return
+     * @return String VerificationCode
      */
     public static String generateVerificationCode(int verificationCodeLength, String sources) {
         if (sources == null || sources.trim().length() == 0) {
