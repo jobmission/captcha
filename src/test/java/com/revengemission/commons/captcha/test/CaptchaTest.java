@@ -28,6 +28,7 @@ public class CaptchaTest {
         File file4 = new File(path.toString(), 4 + ".gif");
         File file5 = new File(path.toString(), 5 + ".jpg");
         File file6 = new File(path.toString(), 6 + ".gif");
+        File file7 = new File(path.toString(), 7 + ".jpg");
         String code = VerificationCodeUtil.generateVerificationCode(4, null);
 
         VerificationCodeUtil.outputImage(w, h, file1, code, VerificationCodeMode.NORMAL);
@@ -36,6 +37,7 @@ public class CaptchaTest {
         VerificationCodeUtil.outputImage(w, h, file4, code, VerificationCodeMode.GIF3D);
         VerificationCodeUtil.outputImage(w, h, file5, code, VerificationCodeMode.MIX);
         VerificationCodeUtil.outputImage(w, h, file6, code, VerificationCodeMode.MIXGIF);
+        VerificationCodeUtil.outputImage(w, h, file7, code, VerificationCodeMode.VAGUE);
 
     }
 }

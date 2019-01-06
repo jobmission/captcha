@@ -344,7 +344,7 @@ public class GifEncoder {
     /**
      * Writes Graphic Control Extension
      *
-     * @throws IOException
+     * @throws IOException if exception
      */
     protected void writeGraphicCtrlExt() throws IOException {
         out.write(0x21); // extension introducer
@@ -377,7 +377,7 @@ public class GifEncoder {
     /**
      * Writes Image Descriptor
      *
-     * @throws IOException
+     * @throws IOException if exception
      */
     protected void writeImageDesc() throws IOException {
         out.write(0x2c); // image separator
@@ -402,7 +402,7 @@ public class GifEncoder {
     /**
      * Writes Logical Screen Descriptor
      *
-     * @throws IOException
+     * @throws IOException if exception
      */
     protected void writeLSD() throws IOException {
         // logical screen size
@@ -421,7 +421,7 @@ public class GifEncoder {
     /**
      * Writes Netscape application extension to define
      *
-     * @throws IOException
+     * @throws IOException if exception
      */
     protected void writeNetscapeExt() throws IOException {
         out.write(0x21); // extension introducer
@@ -437,7 +437,7 @@ public class GifEncoder {
     /**
      * Writes color table
      *
-     * @throws IOException
+     * @throws IOException if exception
      */
     protected void writePalette() throws IOException {
         out.write(colorTab, 0, colorTab.length);
@@ -450,7 +450,7 @@ public class GifEncoder {
     /**
      * Encodes and writes pixel data
      *
-     * @throws IOException
+     * @throws IOException if exception
      */
     protected void writePixels() throws IOException {
         Encoder encoder = new Encoder(width, height, indexedPixels, colorDepth);
@@ -460,8 +460,8 @@ public class GifEncoder {
     /**
      * Write 16-bit value to output stream, LSB first
      *
-     * @param value
-     * @throws IOException
+     * @param value convert and write value
+     * @throws IOException if exception
      */
     protected void writeShort(int value) throws IOException {
         out.write(value & 0xff);
@@ -471,8 +471,8 @@ public class GifEncoder {
     /**
      * Writes string to output stream
      *
-     * @param s
-     * @throws IOException
+     * @param s write string
+     * @throws IOException if exception
      */
     protected void writeString(String s) throws IOException {
         for (int i = 0; i < s.length(); i++) {

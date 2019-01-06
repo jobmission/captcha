@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -34,54 +33,31 @@ public class VerificationCodeUtil {
             e.printStackTrace();
         }
     }
-    //private static Random random = new Random(System.currentTimeMillis());
 
     // 验证码来源范围，去掉了0,1,I,O,l,o几个容易混淆的字符
     public static final String VERIFICATION_CODES = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz";
 
-    private static ImgFontByte imgFontByte = new ImgFontByte();
-
     private static Font baseFont;
 
     static {
-        /*try {
-            baseFont = Font.createFont(Font.TRUETYPE_FONT, new ByteArrayInputStream(imgFontByte.hex2byte(FontBytes.getFontByteStr())));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }*/
-
         try {
-            URL url = VerificationCodeUtil.class.getResource("/IBMPlexSans-Thin.ttf");
-            /**
-             * url.getFile() 得到这个文件的绝对路径
-             */
-            System.out.println(url.getFile());
-            File file = new File(url.getFile());
-            if (file.exists()) {
-                baseFont = Font.createFont(Font.TRUETYPE_FONT, file);
-            } else {
-                url = VerificationCodeUtil.class.getResource("default.ttf");
-                file = new File(url.getFile());
-                if (file.exists()) {
-                    baseFont = Font.createFont(Font.TRUETYPE_FONT, file);
-                } else {
-                    baseFont = new Font(null, Font.PLAIN, 14);
-                }
-            }
-
+            //jar中获取资源文件方式不同
+            //use Spring type ClassPathResource.
+            //File file = new ClassPathResource("default.ttf").getFile();
+            baseFont = Font.createFont(Font.TRUETYPE_FONT, VerificationCodeUtil.class.getResource("/IBMPlexSans-Thin.ttf").openStream());
         } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            System.out.println("create font finally");
+            System.out.println("get font IBMPlexSans-Thin.ttf exception:" + e.getMessage());
+            try {
+                baseFont = Font.createFont(Font.TRUETYPE_FONT, VerificationCodeUtil.class.getResource("/default.ttf").openStream());
+            } catch (Exception e2) {
+                System.out.println("get font default.ttf exception:" + e2.getMessage());
+            }
+        }
+
+        if (baseFont == null) {
+            baseFont = new Font("Algerian", Font.ITALIC, 14);
         }
     }
-
-    // 字体类型
-    private static String[] fontName =
-            {
-                    "Algerian", "Arial", "Arial Black", "Agency FB", "Calibri", "Cambria", "Gadugi", "Georgia", "Consolas", "Comic Sans MS", "Courier New",
-                    "Gill sans", "Time News Roman", "Tahoma", "Quantzite", "Verdana"
-            };
 
     // 字体样式
     private static int[] fontStyle =
@@ -100,7 +76,7 @@ public class VerificationCodeUtil {
      * 使用默认字符源生成验证码
      *
      * @param verificationCodeLength 验证码长度
-     * @return verificationCode
+     * @return String VerificationCode
      */
     public static String generateVerificationCode(int verificationCodeLength) {
         return generateVerificationCode(verificationCodeLength, VERIFICATION_CODES);
@@ -111,7 +87,7 @@ public class VerificationCodeUtil {
      *
      * @param verificationCodeLength 验证码长度
      * @param sources                验证码字符源
-     * @return
+     * @return String VerificationCode
      */
     public static String generateVerificationCode(int verificationCodeLength, String sources) {
         if (sources == null || sources.trim().length() == 0) {
@@ -160,7 +136,7 @@ public class VerificationCodeUtil {
         char[] charts = verificationCode.toCharArray();
         for (int i = 0; i < charts.length; i++) {
             g2.setColor(c);// 设置背景色
-            g2.setFont(getRandomFont(h, verificationCodeMode));
+            g2.setFont(getFont(h));
             g2.fillRect(0, 2, w, h - 4);
         }
 
@@ -198,10 +174,11 @@ public class VerificationCodeUtil {
         Double rd = random.nextDouble();
         Boolean rb = random.nextBoolean();
 
+        // 4.写入验证码字符串
         if (verificationCodeMode.equals(VerificationCodeMode.NORMAL)) {
             for (int i = 0; i < verificationCodeLength; i++) {
-                g2.setColor(getRandColor(100, 160));
-                g2.setFont(getRandomFont(h, verificationCodeMode));
+                g2.setColor(getRandColor(80, 160));
+                g2.setFont(getFont(h));
 
                 AffineTransform affine = new AffineTransform();
                 affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / (double) verificationCodeLength) * i + (h - 4) / 2.0, h / 2.0);
@@ -223,7 +200,7 @@ public class VerificationCodeUtil {
             AlphaComposite ac3;
             for (int i = 0; i < verificationCodeLength; i++) {
                 g2.setColor(getRandColor(100, 160));
-                g2.setFont(getRandomFont(h, verificationCodeMode));
+                g2.setFont(getFont(h));
                 for (int j = 0; j < verificationCodeLength; j++) {
                     AffineTransform affine = new AffineTransform();
                     affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / (double) verificationCodeLength) * i + (h - 4) / 2.0, h / 2.0);
@@ -242,7 +219,7 @@ public class VerificationCodeUtil {
         } else {
             for (int i = 0; i < verificationCodeLength; i++) {
                 g2.setColor(getRandColor(100, 160));
-                g2.setFont(getRandomFont(h, verificationCodeMode));
+                g2.setFont(getFont(h));
 
                 AffineTransform affine = new AffineTransform();
                 affine.setToRotation(Math.PI / 4 * rd * (rb ? 1 : -1), (w / (double) verificationCodeLength) * i + (h - 4) / 2.0, h / 2.0);
@@ -327,38 +304,6 @@ public class VerificationCodeUtil {
     }
 
     /**
-     * 随机字体、随机风格、随机大小
-     *
-     * @param h 验证码图片高
-     * @return
-     */
-    private static Font getRandomFont(int h, VerificationCodeMode verificationCodeMode) {
-        // 字体
-        String name = fontName[random.nextInt(fontName.length)];
-        // 字体样式
-        int style = fontStyle[random.nextInt(fontStyle.length)];
-        // 字体大小
-        int size = getRandomFontSize(h);
-
-        if (verificationCodeMode.equals(VerificationCodeMode.NORMAL)) {
-            return new Font(name, style, size);
-        } else if (verificationCodeMode.equals(VerificationCodeMode.VAGUE)) {
-            return new Font(name, style, size);
-        } else if (verificationCodeMode.equals(VerificationCodeMode.D3) || verificationCodeMode.equals(VerificationCodeMode.GIF3D)) {
-            return new ImgFontByte().getFont(size, style);
-        } else if (verificationCodeMode.equals(VerificationCodeMode.MIX) || verificationCodeMode.equals(VerificationCodeMode.MIX)) {
-            int flag = random.nextInt(10);
-            if (flag > 4) {
-                return new Font(name, style, size);
-            } else {
-                return new ImgFontByte().getFont(size, style);
-            }
-        } else {
-            return new Font(name, style, size);
-        }
-    }
-
-    /**
      * 干扰线按范围获取随机数
      *
      * @return
@@ -383,23 +328,22 @@ public class VerificationCodeUtil {
     /**
      * 获取字体大小按范围随机
      *
-     * @param h 验证码图片高
+     * @param height 验证码图片高
      * @return
      */
-    private static int getRandomFontSize(int h) {
-        int min = h - 8;
+    private static int getRandomFontSize(int height) {
+        int min = height - 8;
         // int max = 46;
         return random.nextInt(11) + min;
     }
 
-    /**
-     * 3D中空字体自定义属性类
-     */
-    static class ImgFontByte {
-        public Font getFont(int fontSize, int fontStyle) {
-            Font font = baseFont;
-            return font.deriveFont(fontStyle, fontSize);
-        }
+    public static Font getFont(int height) {
+        // 字体样式
+        int style = fontStyle[random.nextInt(fontStyle.length)];
+        // 字体大小
+        int size = getRandomFontSize(height);
+        Font font = baseFont;
+        return font.deriveFont(style, size);
     }
 
     /**
