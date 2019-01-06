@@ -11,8 +11,9 @@
 ````
 ````
 
-File file = new File("F:\\verifies\\captcha.gif");
-VerificationCodeUtil.outputImage(w, h, new FileOutputStream(file), 4, VerificationCodeMode.MIXGIF);
+File file = new File("D:\\captcha.gif");
+String code = VerificationCodeUtil.generateVerificationCode(4, null);
+VerificationCodeUtil.outputImage(w, h, new FileOutputStream(file), code, VerificationCodeMode.MIXGIF);
 
 ````
 
