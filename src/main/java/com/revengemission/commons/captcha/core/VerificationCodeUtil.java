@@ -44,13 +44,15 @@ public class VerificationCodeUtil {
             //jar中获取资源文件方式不同
             //use Spring type ClassPathResource.
             //File file = new ClassPathResource("default.ttf").getFile();
-            baseFont = Font.createFont(Font.TRUETYPE_FONT, VerificationCodeUtil.class.getResource("/IBMPlexSans-Thin.ttf").openStream());
+            baseFont = Font.createFont(Font.TRUETYPE_FONT, VerificationCodeUtil.class.getResource("/default.ttf").openStream());
         } catch (Exception e) {
-            System.out.println("get font IBMPlexSans-Thin.ttf exception:" + e.getMessage());
+            System.out.println("not found default.ttf .");
+            System.out.println("try to load IBMPlexSans-Thin.ttf .");
             try {
-                baseFont = Font.createFont(Font.TRUETYPE_FONT, VerificationCodeUtil.class.getResource("/default.ttf").openStream());
+                baseFont = Font.createFont(Font.TRUETYPE_FONT, VerificationCodeUtil.class.getResource("/IBMPlexSans-Thin.ttf").openStream());
             } catch (Exception e2) {
-                System.out.println("get font default.ttf exception:" + e2.getMessage());
+                System.out.println("not found IBMPlexSans-Thin.ttf");
+                System.out.println("try to load Algerian ,maybe fallback(system default font)");
             }
         }
 
