@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -42,28 +41,21 @@ public class VerificationCodeUtil {
 
     static {
         try {
-            URL url = VerificationCodeUtil.class.getResource("/IBMPlexSans-Thin.ttf");
-            /**
-             * url.getFile() 得到这个文件的绝对路径
-             */
-            System.out.println(url.getFile());
-            File file = new File(url.getFile());
-            if (file.exists()) {
-                baseFont = Font.createFont(Font.TRUETYPE_FONT, file);
-            } else {
-                url = VerificationCodeUtil.class.getResource("default.ttf");
-                file = new File(url.getFile());
-                if (file.exists()) {
-                    baseFont = Font.createFont(Font.TRUETYPE_FONT, file);
-                } else {
-                    baseFont = new Font(null, Font.PLAIN, 14);
-                }
-            }
-
+            //jar中获取资源文件方式不同
+            //use Spring type ClassPathResource.
+            //File file = new ClassPathResource("default.ttf").getFile();
+            baseFont = Font.createFont(Font.TRUETYPE_FONT, VerificationCodeUtil.class.getResource("/IBMPlexSans-Thin.ttf").openStream());
         } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            System.out.println("create font finally");
+            System.out.println("get font IBMPlexSans-Thin.ttf exception:" + e.getMessage());
+            try {
+                baseFont = Font.createFont(Font.TRUETYPE_FONT, VerificationCodeUtil.class.getResource("/default.ttf").openStream());
+            } catch (Exception e2) {
+                System.out.println("get font default.ttf exception:" + e2.getMessage());
+            }
+        }
+
+        if (baseFont == null) {
+            baseFont = new Font("Algerian", Font.ITALIC, 14);
         }
     }
 
@@ -185,7 +177,7 @@ public class VerificationCodeUtil {
         // 4.写入验证码字符串
         if (verificationCodeMode.equals(VerificationCodeMode.NORMAL)) {
             for (int i = 0; i < verificationCodeLength; i++) {
-                g2.setColor(getRandColor(100, 160));
+                g2.setColor(getRandColor(80, 160));
                 g2.setFont(getFont(h));
 
                 AffineTransform affine = new AffineTransform();
