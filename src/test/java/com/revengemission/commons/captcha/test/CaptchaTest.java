@@ -29,7 +29,7 @@ public class CaptchaTest {
         File file5 = new File(path.toString(), 5 + ".jpg");
         File file6 = new File(path.toString(), 6 + ".gif");
         File file7 = new File(path.toString(), 7 + ".jpg");
-        String code = VerificationCodeUtil.generateVerificationCode(4, null);
+        String code = VerificationCodeUtil.generateVerificationCode(4);
 
         VerificationCodeUtil.outputImage(w, h, file1, code, VerificationCodeMode.NORMAL);
         VerificationCodeUtil.outputImage(w, h, file2, code, VerificationCodeMode.D3);

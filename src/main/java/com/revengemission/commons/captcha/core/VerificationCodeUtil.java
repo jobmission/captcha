@@ -19,6 +19,7 @@ import java.util.Arrays;
  * 彩色字符 每个字符的颜色随机，一定会不相同
  * 随机字符 阿拉伯数字 + 小写字母 + 大写字母
  * 3D中空自定义字体，需要单独使用，只有阿拉伯数字和大写字母
+ * 默认字体IBMPlexSans-Thin.ttf，可以在classpath下放入captcha.ttf进行覆盖
  */
 public class VerificationCodeUtil {
     /**
@@ -43,18 +44,20 @@ public class VerificationCodeUtil {
         try {
             //jar中获取资源文件方式不同
             //use Spring type ClassPathResource.
-            //File file = new ClassPathResource("default.ttf").getFile();
-            baseFont = Font.createFont(Font.TRUETYPE_FONT, VerificationCodeUtil.class.getResource("/IBMPlexSans-Thin.ttf").openStream());
+            //File file = new ClassPathResource("captcha.ttf").getFile();
+            baseFont = Font.createFont(Font.TRUETYPE_FONT, VerificationCodeUtil.class.getResource("/captcha.ttf").openStream());
         } catch (Exception e) {
-            System.out.println("get font IBMPlexSans-Thin.ttf exception:" + e.getMessage());
+            System.out.println("not found captcha.ttf .");
             try {
-                baseFont = Font.createFont(Font.TRUETYPE_FONT, VerificationCodeUtil.class.getResource("/default.ttf").openStream());
+                System.out.println("try to load IBMPlexSans-Thin.ttf .");
+                baseFont = Font.createFont(Font.TRUETYPE_FONT, VerificationCodeUtil.class.getResource("/IBMPlexSans-Thin.ttf").openStream());
             } catch (Exception e2) {
-                System.out.println("get font default.ttf exception:" + e2.getMessage());
+                System.out.println("not found IBMPlexSans-Thin.ttf");
             }
         }
 
         if (baseFont == null) {
+            System.out.println("try to load Algerian ,maybe fallback(system default font)");
             baseFont = new Font("Algerian", Font.ITALIC, 14);
         }
     }
