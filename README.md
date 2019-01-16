@@ -6,19 +6,13 @@
 <dependency>
 			<groupId>com.revengemission.commons</groupId>
 			<artifactId>captcha</artifactId>
-			<version>0.4</version>
+			<version>0.5</version>
 </dependency>
 ````
 ````
 
 File file = new File("D:\\captcha.gif");
-String code = VerificationCodeUtil.generateVerificationCode(4, null);
+String code = VerificationCodeUtil.generateVerificationCode(4);
 VerificationCodeUtil.outputImage(w, h, new FileOutputStream(file), code, VerificationCodeMode.MIXGIF);
 
-````
-
-### todo list 
-````
-Javadoc
-mvn checkstyle:checkstyle
 ````
