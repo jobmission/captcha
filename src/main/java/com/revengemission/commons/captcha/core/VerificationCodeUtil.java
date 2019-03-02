@@ -15,10 +15,7 @@ import java.util.Arrays;
 
 /**
  * 验证码工具类：
- * 随机字体、字体样式、字体大小（验证码图片宽度 - 8 ~ 验证码图片宽度 + 10）
- * 彩色字符 每个字符的颜色随机，一定会不相同
- * 随机字符 阿拉伯数字 + 小写字母 + 大写字母
- * 3D中空自定义字体，需要单独使用，只有阿拉伯数字和大写字母
+ * 彩色字符 每个字符的颜色随机，不相同
  * 默认字体IBMPlexSans-Thin.ttf，可以在classpath下放入captcha.ttf进行覆盖
  */
 public class VerificationCodeUtil {
@@ -26,6 +23,9 @@ public class VerificationCodeUtil {
      * 随机类
      */
     private static SecureRandom random;
+    // 验证码来源范围，去掉了0,1,i,I,l,O,o几个容易混淆的字符
+    public static final String VERIFICATION_CODES = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz";
+    private static Font baseFont;
 
     static {
         try {
@@ -33,14 +33,6 @@ public class VerificationCodeUtil {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-    }
-
-    // 验证码来源范围，去掉了0,1,I,O,l,o几个容易混淆的字符
-    public static final String VERIFICATION_CODES = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz";
-
-    private static Font baseFont;
-
-    static {
         try {
             //jar中获取资源文件方式不同
             //use Spring type ClassPathResource.
@@ -110,9 +102,9 @@ public class VerificationCodeUtil {
      *
      * @param w                    验证码图片的宽
      * @param h                    验证码图片的高
-     * @param os                   流
+     * @param os                   输出流
      * @param verificationCode     验证码
-     * @param verificationCodeMode 场景类型
+     * @param verificationCodeMode 类型
      * @throws IOException if exception
      */
     public static void outputImage(int w, int h, OutputStream os, String verificationCode, VerificationCodeMode verificationCodeMode) throws IOException {
@@ -180,7 +172,7 @@ public class VerificationCodeUtil {
         // 4.写入验证码字符串
         if (verificationCodeMode.equals(VerificationCodeMode.NORMAL)) {
             for (int i = 0; i < verificationCodeLength; i++) {
-                g2.setColor(getRandColor(80, 160));
+                g2.setColor(getRandColor(100, 160));
                 g2.setFont(getFont(h));
 
                 AffineTransform affine = new AffineTransform();
@@ -247,7 +239,7 @@ public class VerificationCodeUtil {
                 try {
                     os.close();
                 } catch (IOException e) {
-                    System.out.println(e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }
@@ -268,7 +260,7 @@ public class VerificationCodeUtil {
                 try {
                     os.close();
                 } catch (IOException e) {
-                    System.out.println(e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }
