@@ -107,17 +107,17 @@ public class VerificationCodeUtil {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // 1.设置边框色
-        g2.setColor(getRandColor(80, 150));
+        g2.setColor(getRandColor(130, 160));
         g2.fillRect(0, 0, w, h);
 
         // 2.设置背景色
-        Color c = getRandColor(200, 240);
+        Color c = getRandColor(210, 240);
         g2.setColor(c);
         g2.fillRect(1, 2, w - 1, h - 4);
 
         // 3.绘制干扰线
         int lineNumbers = getRandomDrawLine();
-        g2.setColor(getRandColor(130, 200));// 设置线条的颜色
+        g2.setColor(getRandColor(150, 200));// 设置线条的颜色
         for (int i = 0; i < lineNumbers; i++) {
             int x = random.nextInt(w - 1);
             int y = random.nextInt(h - 1);
@@ -135,7 +135,7 @@ public class VerificationCodeUtil {
         for (int i = 0; i < area; i++) {
             int x = random.nextInt(w);
             int y = random.nextInt(h);
-            int rgb = getRandomIntColor(110, 150);
+            int rgb = getRandomIntColor(115, 160);
             image.setRGB(x, y, rgb);
         }
 
@@ -149,7 +149,7 @@ public class VerificationCodeUtil {
         // 6.写入验证码字符串
         if (verificationCodeMode.equals(VerificationCodeMode.NORMAL)) {
             for (int i = 0; i < verificationCodeLength; i++) {
-                g2.setColor(getRandColor(60, 120));
+                g2.setColor(getRandColor(50, 95));
                 g2.setFont(getFont(h));
 
                 AffineTransform affine = new AffineTransform();
@@ -175,7 +175,7 @@ public class VerificationCodeUtil {
 
             AlphaComposite ac3;
             for (int i = 0; i < verificationCodeLength; i++) {
-                g2.setColor(getRandColor(60, 120));
+                g2.setColor(getRandColor(50, 95));
                 g2.setFont(getFont(h));
                 for (int j = 0; j < verificationCodeLength; j++) {
                     AffineTransform affine = new AffineTransform();
@@ -196,7 +196,7 @@ public class VerificationCodeUtil {
             g2.dispose();
         } else {
             for (int i = 0; i < verificationCodeLength; i++) {
-                g2.setColor(getRandColor(60, 120));
+                g2.setColor(getRandColor(50, 95));
                 g2.setFont(getFont(h));
 
                 AffineTransform affine = new AffineTransform();
@@ -307,7 +307,7 @@ public class VerificationCodeUtil {
      */
     private static int getRandomDrawLine() {
         int min = 2;
-        int max = 10;
+        int max = 8;
         return random.nextInt(max) % (max - min + 1) + min;
     }
 
