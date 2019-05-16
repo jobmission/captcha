@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.revengemission.commons</groupId>
     <artifactId>captcha</artifactId>
-    <version>0.6</version>
+    <version>0.7</version>
     <packaging>jar</packaging>
     <name>captcha utils</name>
     <description>captcha utils</description>
