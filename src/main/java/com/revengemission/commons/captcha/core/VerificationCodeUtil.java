@@ -18,7 +18,9 @@ public class VerificationCodeUtil {
      * 随机类
      */
     private static SecureRandom random;
-    // 验证码来源范围，去掉了0,1,i,j,I,l,O,o几个容易混淆的字符
+    /**
+     * 验证码来源范围，去掉了0,1,i,j,I,l,O,o几个容易混淆的字符
+     */
     public static final String VERIFICATION_CODES = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghkmnpqstuvwxyz";
     private static Font baseFont;
 
@@ -31,7 +33,7 @@ public class VerificationCodeUtil {
         try {
             // jar中获取资源文件方式不同
             // use Spring type ClassPathResource.
-            // File file = new ClassPathResource("captcha.ttf").getFile();
+            /// File file = new ClassPathResource("captcha.ttf").getFile();
             baseFont = Font.createFont(Font.TRUETYPE_FONT,
                     VerificationCodeUtil.class.getResource("/captcha.ttf").openStream());
         } catch (Exception e) {
@@ -51,11 +53,14 @@ public class VerificationCodeUtil {
         }
     }
 
-    // 字体样式
-    private static int[] fontStyle = {Font.BOLD, Font.ITALIC, Font.ROMAN_BASELINE, Font.PLAIN,
-            Font.BOLD + Font.ITALIC};
+    /**
+     * 字体样式
+     */
+    private static int[] fontStyle = {Font.BOLD, Font.ITALIC, Font.ROMAN_BASELINE, Font.PLAIN, Font.BOLD + Font.ITALIC};
 
-    // 颜色
+    /**
+     * 颜色
+     */
     private static Color[] colorRange = {Color.WHITE, Color.CYAN, Color.GRAY, Color.LIGHT_GRAY, Color.MAGENTA,
             Color.ORANGE, Color.PINK, Color.YELLOW, Color.GREEN, Color.BLUE, Color.DARK_GRAY, Color.BLACK, Color.RED};
 
@@ -101,6 +106,12 @@ public class VerificationCodeUtil {
      */
     public static void outputImage(int w, int h, OutputStream os, String verificationCode,
                                    VerificationCodeMode verificationCodeMode) throws IOException {
+        if (w < 1) {
+            w = 180;
+        }
+        if (h < 1) {
+            h = 60;
+        }
         int verificationCodeLength = verificationCode.length();
         BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = image.createGraphics();
